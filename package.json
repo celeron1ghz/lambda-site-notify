@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "aws-sdk": "^2.387.0",
+    "puppeteer": "^1.11.0"
+  },
+  "dependencies": {
+    "puppeteer-core": "^1.11.0"
+  }
+}

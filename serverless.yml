@@ -1,0 +1,35 @@
+service: site-notify
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev 
+  region: ap-northeast-1
+  deploymentBucket: serverless-upload-ap-northeast-1
+  versionFunctions: false
+  iamRoleStatements:
+    - Effect: Allow
+      Action: [ssm:GetParameter]
+      Resource:
+        - Fn::Join: [ ":", ["arn:aws:ssm", { Ref: AWS::Region }, { Ref: AWS::AccountId }, "parameter/webservice/fc_and/*"]]
+
+functions:
+  main:
+    handler: handler.main
+    timeout: 60
+    memoriSize: 3008
+    description: site crawling
+    layers:
+      - Fn::Join: [ ":", [ "arn:aws:lambda", { Ref: AWS::Region }, { Ref: AWS::AccountId }, "layer:puppeteer:3" ] ] 
+      - Fn::Join: [ ":", [ "arn:aws:lambda", { Ref: AWS::Region }, { Ref: AWS::AccountId }, "layer:japanese_font:1" ] ] 
+    events:
+      - schedule:
+          name: "${self:service}"
+          rate: cron(0 2 * * ? *)
+
+#resources:
+#  Resources:
+#    Bucket:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: "${self:service}"
